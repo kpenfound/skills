@@ -30,11 +30,11 @@ the reader a useful account of the current implementation.
 - Preserve rationale that affects a current decision, including compatibility
   requirements and external constraints. Express the requirement directly.
 
-| Change narration | Useful current explanation |
-| --- | --- |
-| `// We now persist the cursor before acknowledging the batch.` | `// Persist the cursor before acknowledging the batch so recovery resumes after durable work.` |
-| `// Unlike the old implementation, retries don't send another payment.` | `// Reuse the operation key on retries so the provider can deduplicate the payment.` |
-| `// Added cache lookup here.` | Remove it when the following cache lookup is self-explanatory. |
+| Change narration                                                        | Useful current explanation                                                                     |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `// We now persist the cursor before acknowledging the batch.`          | `// Persist the cursor before acknowledging the batch so recovery resumes after durable work.` |
+| `// Unlike the old implementation, retries don't send another payment.` | `// Reuse the operation key on retries so the provider can deduplicate the payment.`           |
+| `// Added cache lookup here.`                                           | Remove it when the following cache lookup is self-explanatory.                                 |
 
 Words are clues, not a blacklist. "The previous attempt's operation key" can
 describe a runtime relationship that matters. "The previous implementation"
@@ -59,11 +59,11 @@ was applied.
   implementation checks with behavior checks where a real contract needs
   coverage; remove redundant checks when existing tests already cover it.
 
-| Weak evidence of cleanup | Meaningful verification |
-| --- | --- |
-| Assert that source code does not contain `legacyAuthorize`. | Exercise a protected action without permission and verify rejection and unchanged protected state. |
-| Assert that `oldCache` is absent from a source file. | Exercise invalidation and verify that the next read returns the updated value. |
-| Add a test that searches every test name for a removed development phase label. | Audit the rename once, check references and confirm the intended tests remain discoverable. |
+| Weak evidence of cleanup                                                        | Meaningful verification                                                                            |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Assert that source code does not contain `legacyAuthorize`.                     | Exercise a protected action without permission and verify rejection and unchanged protected state. |
+| Assert that `oldCache` is absent from a source file.                            | Exercise invalidation and verify that the next read returns the updated value.                     |
+| Add a test that searches every test name for a removed development phase label. | Audit the rename once, check references and confirm the intended tests remain discoverable.        |
 
 Negative assertions are useful when they express the contract. Keep tests for
 invalid input, denied permissions, missing required configuration, duplicate
