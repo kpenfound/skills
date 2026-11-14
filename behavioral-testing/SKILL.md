@@ -30,9 +30,12 @@ hand; audit or restructure the broader suite only when requested.
   logic unless that detail is itself a maintained contract.
 - Test current requirements. Do not add permanent tests proving that an obsolete
   name, source fragment or behavior was removed merely to verify a patch. Use a
-  one-time inspection for mechanical cleanup. Negative assertions are valuable
-  when they protect a current contract, such as denied access, secret omission
-  or prevention of duplicate side effects.
+  one-time inspection for mechanical cleanup. Add a permanent check only when
+  the absence itself is an explicit maintained requirement, such as a packaging
+  rule, an architectural boundary, or the repository's lint and markdown checks.
+  Negative assertions are valuable when they protect a current contract, such as
+  denied access, secret omission or prevention of duplicate side effects. The
+  `no-deltas` skill, when installed, states the same rule for tests in general.
 - Preserve useful existing coverage. These principles do not authorize wholesale
   deletion of unit tests or migration of the project's test infrastructure.
 
