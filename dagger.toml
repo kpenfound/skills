@@ -1,0 +1,12 @@
+[modules.dang-sdk]
+source = "dagger.io/sdk/dang@v1.0.1"
+
+[sdks.dang]
+module = "dang-sdk"
+
+[modules.markdown-format]
+source = ".dagger/modules/markdown-format"
+
+[sdks.dang.scopes.".dagger/modules/markdown-format"]
+is-module = true
+name = "markdown-format"

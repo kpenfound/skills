@@ -10,9 +10,9 @@ migrate an established setup merely because this reference describes it.
 Both patterns can exercise the real built application as a separate process.
 Choose based on the project's conventions and the control scenarios need.
 
-| Pattern | Dagger module owns | Test code owns |
-| --- | --- | --- |
-| Compose-style | Building and starting dependent services, preparing the test runtime and running tests in it | Scenario prerequisites, application interactions and assertions |
+| Pattern              | Dagger module owns                                                                                                       | Test code owns                                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Compose-style        | Building and starting dependent services, preparing the test runtime and running tests in it                             | Scenario prerequisites, application interactions and assertions                                                          |
 | Testcontainers-style | Building the test environment and exposing orchestration capabilities, without starting the scenario dependencies itself | Managing service dependencies through generated Dagger clients, plus scenario prerequisites, interactions and assertions |
 
 Compose-style is convenient for a stable shared service topology.
