@@ -10,3 +10,10 @@ source = ".dagger/modules/markdown-format"
 [sdks.dang.scopes.".dagger/modules/markdown-format"]
 is-module = true
 name = "markdown-format"
+
+[modules.skill-structure]
+source = ".dagger/modules/skill-structure"
+
+[sdks.dang.scopes.".dagger/modules/skill-structure"]
+is-module = true
+name = "skill-structure"

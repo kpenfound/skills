@@ -1,6 +1,6 @@
 ---
 name: no-deltas
-description: Write and review user docs, API doc comments, tests and pull request text so they describe current behavior and meaningful contracts. Use when editing these artifacts or auditing them for change-history wording, development phase labels, and tests that only assert obsolete implementation details are absent.
+description: Writes and reviews user docs, API doc comments, tests and pull request text so they describe current behavior and meaningful contracts. Use when editing these artifacts or auditing them for change-history wording, development phase labels, and tests that only assert obsolete implementation details are absent.
 ---
 
 # No deltas

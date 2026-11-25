@@ -1,6 +1,6 @@
 ---
 name: behavioral-testing
-description: Design, write, review and run tests that protect application behavior through implementation changes. Use when choosing test boundaries, adding regression coverage, designing E2E scenarios, maintaining golden files or improving test reliability and execution time.
+description: Designs, writes, reviews and runs tests that protect application behavior through implementation changes. Use when choosing test boundaries, adding regression coverage, designing E2E scenarios, maintaining golden files or improving test reliability and execution time.
 ---
 
 # Behavioral testing

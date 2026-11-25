@@ -5,7 +5,7 @@ description: How to react to lint, type-check, test and repository check finding
 
 # Lint discipline
 
-A finding is information about the code. React by changing the code, never the check.
+A finding is information about the code. React by changing the code, never the check. The check is how the repository detects this failure, so changing it hides the failure instead of removing it.
 
 Adapted from pstack (MIT, Copyright (c) 2026 Lauren Tan) at `cursor/plugins` commit `ec569379616a4826b98f0f0a205dd3411b573611`: `pstack/skills/principle-encode-lessons-in-structure/SKILL.md`. The licence is in `LICENSE` beside this file.
 
@@ -22,14 +22,14 @@ A guard added to make a tool quiet is a symptom fix. If the cause is outside the
 
 ## Never suppress or weaken
 
-- Never add an inline suppression. The `no-comments` skill defines what counts as one and owns the comment policy.
-- Never weaken a check to get past a finding: do not raise a threshold, loosen a strictness flag, disable or narrow a rule, widen an ignore pattern, exclude a path, or skip, delete or loosen a test.
-- Never replace a failing assertion with one that cannot fail.
+- Never add an inline suppression. The `no-comments` skill defines what counts as one and owns the comment policy. A suppression switches the check off for that code, so the finding stays and nobody sees it.
+- Never weaken a check to get past a finding: do not raise a threshold, loosen a strictness flag, disable or narrow a rule, widen an ignore pattern, exclude a path, or skip, delete or loosen a test. A weaker check stops catching the failure it was written for, for this finding and for every later one.
+- Never replace a failing assertion with one that cannot fail. Such an assertion tests nothing, so the defect it caught goes unnoticed.
 - A finding you disagree with is reported to the caller with your reasoning. It is not silenced.
 
 ## Exceptions live by name in `weeds.toml`
 
-An exception exists only by name in the repository's `weeds.toml`, never inline. Add or widen an entry only when the task or the owner asks for it. When a fix is out of scope, leave the finding in place and report the entry you would propose.
+An exception exists only by name in the repository's `weeds.toml`, never inline. A named entry sits in one reviewed file and fails the check once stale, while an inline one stays hidden beside the code. Add or widen an entry only when the task or the owner asks for it. When a fix is out of scope, leave the finding in place and report the entry you would propose.
 
 Remove stale entries. An exception, allowlist entry or baseline entry that matches nothing fails the check, so delete it as soon as the code it named is fixed or gone.
 
@@ -38,7 +38,7 @@ Remove stale entries. An exception, allowlist entry or baseline entry that match
 The baseline in `weeds.toml` holds complexity findings only: function length, cognitive complexity, nesting depth and similar. It exists for code that predates the policy.
 
 - A finding from any other linter cannot be baselined. A baseline entry for one is a config error. Fix correctness, dead-code, commented-out-code and TODO findings in the code.
-- The baseline only shrinks. Never add an entry and never widen one. New code that trips a complexity rule is refactored.
+- The baseline only shrinks. Never add an entry and never widen one. The baseline exists for code that predates the policy, so growing it lets new debt in. New code that trips a complexity rule is refactored.
 - An entry that matches nothing is stale and fails the check. Delete it when the function is fixed.
 - Moving complexity from one function to another is not a reduction. Lower the complexity itself, by extracting a named step or removing a branch.
 

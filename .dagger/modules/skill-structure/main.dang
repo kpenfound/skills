@@ -1,0 +1,234 @@
+"""
+Structural check over every skill folder in the workspace.
+
+A skill is a top-level folder that holds a SKILL.md. The check reads files only: it calls no model, runs no container and reads no secret.
+"""
+type Meta {
+  name: String
+  description: String
+}
+
+type SkillStructure {
+  """
+  Markdown files in the workspace, without .git, .dagger and node_modules.
+  """
+  pub source: Directory!
+
+  new(ws: Workspace!) {
+    self.source = ws.directory("/", include: ["**/*.md"], exclude: [".git", ".dagger", "**/node_modules"])
+    self
+  }
+
+  """
+  Fail when any skill breaks a structural rule. Each line of the error names the skill, the rule and the fix.
+  """
+  pub check: Void @check {
+    let found = problemsIn(source)
+    if (found.length > 0) {
+      raise found.join("\n")
+    }
+    null
+  }
+
+  """
+  Run the rules over built-in sample skills: one well-formed skill must pass and each rule must fail on a skill that breaks it.
+  """
+  pub selfTest: Void @check {
+    let failures = selfTestFailures.filter { f => !f.isEmpty }
+    if (failures.length > 0) {
+      raise failures.join("\n")
+    }
+    null
+  }
+
+  """
+  Problems found in every top-level folder of dir that holds a SKILL.md.
+  """
+  pub problemsIn(dir: Directory!): [String!]! {
+    let none: [String!]! = []
+    dir.entries
+      .filter { e => e.hasSuffix("/") }
+      .map { e => e.trimSuffix("/") }
+      .filter { name => dir.exists(name + "/SKILL.md") }
+      .reduce(none) { acc, name => acc + skillProblems(dir, name) }
+  }
+
+  """
+  Problems found in one skill folder.
+  """
+  pub skillProblems(dir: Directory!, name: String!): [String!]! {
+    let raw = dir.file(name + "/SKILL.md").contents
+    let parts = raw.match(`(?s)^---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n(.*))?$`)
+    if (parts == null) {
+      return [fail(name, "frontmatter", "SKILL.md must start with a --- block, closed by a second ---, holding name and description.")]
+    }
+    let front = parts!.captures[0]!
+    let body = parts!.captures[1] ?? ""
+    let meta = (YAML.decode(front) :: Meta) rescue null
+    if (meta == null) {
+      return [fail(name, "frontmatter", "the --- block is not valid YAML with text values for name and description. Fix its syntax.")]
+    }
+    nameProblems(name, meta!.name)
+      + descriptionProblems(name, meta!.description)
+      + bodyProblems(name, body)
+      + referenceProblems(dir, name)
+  }
+
+  let fail(skill: String!, rule: String!, fix: String!): String! {
+    "skill '" + skill + "': " + rule + ": " + fix
+  }
+
+  let nameProblems(folder: String!, name: String): [String!]! {
+    if (name == null or name!.trimSpace.isEmpty) {
+      return [fail(folder, "name", "add `name: " + folder + "` to the frontmatter.")]
+    }
+    let value = name!
+    let differs: [String!]! = if (value != folder) {
+      [fail(folder, "name", "frontmatter name '" + value + "' differs from the folder name. Make them both '" + folder + "'.")]
+    } else {
+      []
+    }
+    let tooLong: [String!]! = if (value.length > 64) {
+      [fail(folder, "name", "'" + value + "' is " + toString(value.length) + " characters. Use at most 64.")]
+    } else {
+      []
+    }
+    let badChars: [String!]! = if (!value.containsMatch(`^[a-z0-9-]*$`)) {
+      [fail(folder, "name", "'" + value + "' must use only lowercase letters, digits and hyphens. Rename it.")]
+    } else {
+      []
+    }
+    let reserved: [String!]! = if (value.contains("anthropic") or value.contains("claude")) {
+      [fail(folder, "name", "'" + value + "' contains a reserved word (anthropic or claude). Rename it.")]
+    } else {
+      []
+    }
+    differs + tooLong + badChars + reserved
+  }
+
+  let descriptionProblems(folder: String!, description: String): [String!]! {
+    if (description == null or description!.trimSpace.isEmpty) {
+      return [fail(folder, "description", "add a non-empty `description:` that says what the skill does and when to load it.")]
+    }
+    let value = description!
+    let tooLong: [String!]! = if (value.length > 1024) {
+      [fail(folder, "description", "is " + toString(value.length) + " characters. Cut it to 1024 or fewer.")]
+    } else {
+      []
+    }
+    let xml: [String!]! = if (value.containsMatch(`</?[A-Za-z][^>]*>`)) {
+      [fail(folder, "description", "contains an XML tag. Remove the angle-bracket tag or reword it.")]
+    } else {
+      []
+    }
+    tooLong + xml
+  }
+
+  let bodyProblems(folder: String!, body: String!): [String!]! {
+    let count = body.trimRight("\n").split("\n").length
+    if (count >= 500) {
+      [fail(folder, "body length", "SKILL.md body is " + toString(count) + " lines. Keep it under 500; move detail into a file under the skill folder and link it from SKILL.md.")]
+    } else {
+      []
+    }
+  }
+
+  """
+  Relative file links in markdown text, anchors and queries removed. Code spans and fenced code are ignored.
+  """
+  pub linksIn(text: String!): [String!]! {
+    let prose = text
+      .replaceMatches(`(?s)(\x60{3,}|~{3,}).*?(\x60{3,}|~{3,})`, with: "")
+      .replaceMatches(`(?s)\x60[^\x60]*\x60`, with: "")
+    let inline = prose.matchAll(`!?\[[^\]]*\]\(\s*<?([^)\s>]+)`).map { m => m.captures[0]! }
+    let defs = prose.matchAll(`(?m)^ {0,3}\[[^\]]+\]:\s*<?(\S+)`).map { m => m.captures[0]! }
+    (inline + defs)
+      .map { t => t.split("#")[0]!.split("?")[0]! }
+      .filter { t => !t.isEmpty and !t.containsMatch(`^([a-zA-Z][a-zA-Z0-9+.-]*:|/)`) }
+  }
+
+  let linkedFiles(dir: Directory!, skill: String!, from: Path!): [Path!]! {
+    let text = dir.file(from.string).contents
+    linksIn(text)
+      .map { t => from.parent.join(Path(t)) }
+      .filter { p => p.parts.length > 0 and p.parts[0] != ".." and p.parts[0] == skill }
+      .filter { p => dir.exists(p.string) }
+  }
+
+  let referenceProblems(dir: Directory!, skill: String!): [String!]! {
+    let none: [String!]! = []
+    let entry = Path(skill + "/SKILL.md")
+    linkedFiles(dir, skill, entry)
+      .filter { p => p != entry and p.extension == "md" }
+      .uniq
+      .reduce(none) { acc, ref =>
+        acc + linkedFiles(dir, skill, ref)
+          .filter { p => p != entry and p != ref and p.extension == "md" }
+          .uniq
+          .map { deeper =>
+            fail(skill, "references one level deep", ref.string + " links on to " + deeper.string + ". Link " + deeper.name + " from SKILL.md instead, or fold its content into " + ref.name + ".")
+          }
+      }
+  }
+
+  let skillDir(base: Directory!, folder: String!, front: String!, body: String!): Directory! {
+    base.withNewFile(folder + "/SKILL.md", "---\n" + front + "\n---\n" + body)
+  }
+
+  let goodFront(folder: String!): String! {
+    "name: " + folder + "\ndescription: Does one thing. Load it when the task needs that thing."
+  }
+
+  let lines(count: Int!): String! {
+    "".padRight(count).replace(" ", "line\n")
+  }
+
+  # Empty string when problemsIn(dir) matches the expectation. A blank needle means the directory must pass.
+  let expect(label: String!, dir: Directory!, needle: String!): String! {
+    let joined = problemsIn(dir).join("\n")
+    if (needle.isEmpty) {
+      if (joined.isEmpty) { "" } else { "self-test '" + label + "' should pass but reported: " + joined }
+    } else {
+      if (joined.contains(needle)) { "" } else { "self-test '" + label + "' should report '" + needle + "' but reported: '" + joined + "'" }
+    }
+  }
+
+  let selfTestFailures: [String!]! {
+    let base = directory
+    let long = "".padRight(1025).replace(" ", "a")
+    let ok = skillDir(base, "good-skill", goodFront("good-skill"), "# Good\n\nSee [more](references/more.md).\n")
+      .withNewFile("good-skill/references/more.md", "# More\n\nBack to [the skill](../SKILL.md). Docs: [site](https://example.com/a.md).\n")
+      .withNewFile("scenarios/good-skill/one.md", "# Scenario\n\nNot a skill: no SKILL.md here.\n")
+    [
+      expect("well-formed skill passes and non-skill folders are ignored", ok, ""),
+      expect("name differs from folder", skillDir(base, "folder-a", goodFront("folder-b"), "x\n"), "skill 'folder-a': name: frontmatter name 'folder-b' differs from the folder name"),
+      expect("uppercase in name", skillDir(base, "Bad_Name", goodFront("Bad_Name"), "x\n"), "skill 'Bad_Name': name: 'Bad_Name' must use only lowercase letters, digits and hyphens"),
+      expect("name too long", skillDir(base, long.truncate(65), goodFront(long.truncate(65)), "x\n"), "is 65 characters. Use at most 64"),
+      expect("reserved word in name", skillDir(base, "my-claude-helper", goodFront("my-claude-helper"), "x\n"), "contains a reserved word"),
+      expect("missing name", skillDir(base, "no-name", "description: Does a thing.", "x\n"), "skill 'no-name': name: add `name: no-name`"),
+      expect("missing description", skillDir(base, "no-desc", "name: no-desc", "x\n"), "skill 'no-desc': description: add a non-empty"),
+      expect("description over 1024", skillDir(base, "long-desc", "name: long-desc\ndescription: " + long, "x\n"), "skill 'long-desc': description: is 1025 characters. Cut it to 1024"),
+      expect("description of exactly 1024 passes", skillDir(base, "edge-desc", "name: edge-desc\ndescription: " + long.truncate(1024), "x\n"), ""),
+      expect("xml tag in description", skillDir(base, "xml-desc", "name: xml-desc\ndescription: Use <tool> when needed.", "x\n"), "skill 'xml-desc': description: contains an XML tag"),
+      expect("closing tag in description", skillDir(base, "xml-close", "name: xml-close\ndescription: Use when done.</b>", "x\n"), "skill 'xml-close': description: contains an XML tag"),
+      expect("body of 500 lines", skillDir(base, "long-body", goodFront("long-body"), lines(500)), "skill 'long-body': body length: SKILL.md body is 500 lines. Keep it under 500"),
+      expect("body of 499 lines passes", skillDir(base, "edge-body", goodFront("edge-body"), lines(499)), ""),
+      expect("no frontmatter", base.withNewFile("bare/SKILL.md", "# Just text\n"), "skill 'bare': frontmatter: SKILL.md must start with a ---"),
+      expect(
+        "reference links on to another file",
+        skillDir(base, "nested", goodFront("nested"), "See [a](references/a.md).\n")
+          .withNewFile("nested/references/a.md", "See [b](b.md).\n")
+          .withNewFile("nested/references/b.md", "Leaf.\n"),
+        "skill 'nested': references one level deep: nested/references/a.md links on to nested/references/b.md"
+      ),
+      expect(
+        "link inside a code block is not a reference",
+        skillDir(base, "fenced", goodFront("fenced"), "See [a](a.md).\n")
+          .withNewFile("fenced/a.md", "Example:\n\n```md\n[b](b.md)\n```\n\nAnd `[c](c.md)`.\n")
+          .withNewFile("fenced/b.md", "Leaf.\n")
+          .withNewFile("fenced/c.md", "Leaf.\n"),
+        ""
+      ),
+    ]
+  }
+}
