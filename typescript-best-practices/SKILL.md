@@ -7,12 +7,12 @@ description: TypeScript syntax for type design, narrowing, validation and functi
 
 This skill is the TypeScript syntax for the principles in the `simple-code` skill. Read `simple-code` first for the reasoning behind type-system discipline and boundary discipline. This skill does not restate it.
 
-A type error is a finding to fix in the types or the code. Never silence it inline. The `no-comments` skill owns that rule and the `lint-discipline` skill owns how to react to findings. Without them installed, still fix the cause.
+A type error is a finding to fix in the types or the code. Never silence it inline. A silenced error leaves the defect in the code and hides it from the compiler. The `no-comments` skill owns that rule and the `lint-discipline` skill owns how to react to findings. Without them installed, still fix the cause.
 
 | Rule                  | Summary                                                                                                                                                                                                                             |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Discriminated unions  | Model variants with a `kind` literal discriminant so impossible states cannot be represented. No optional-field bags.                                                                                                               |
-| Branded types         | Brand primitives with `& { readonly __brand: "X" }` so they cannot be mixed up. Validate once at the boundary. A brand comes from a verifying type guard (`input is AgentId`), never from `as`.                                     |
+| Branded types         | Brand primitives with `& { readonly __brand: "X" }` so they cannot be mixed up. Validate once at the boundary. A brand comes from a verifying type guard (`input is AgentId`), never from `as`, which checks nothing.               |
 | Constructive modeling | Build the shape so the illegal value cannot be constructed. `[T, ...T[]]` for non-empty, `[T, T][]` for even length, `start` plus `durationMs` for a range. Not a runtime guard.                                                    |
 | Simplest total type   | Keep `T[]` while every operation on it stays total. Strengthen to `NonEmpty<T>` only where the loose type forces `!`, a cast or a "should never happen" throw.                                                                      |
 | `unknown` over `any`  | External data is `unknown`. Narrow before use.                                                                                                                                                                                      |

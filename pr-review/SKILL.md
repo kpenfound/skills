@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: Review a pull request or change set along two independent axes, Standards (the repository's documented coding standards plus a code-smell baseline) and Spec (what the PR title, description and closing issues asked for). Use when asked to review a PR, a diff or a set of changes, including a non-interactive sandboxed run where the diff, PR text, standards documents and code are provided as files and nothing can be asked, fetched or posted.
+description: Reviews a pull request or change set along two independent axes, Standards (the repository's documented coding standards plus a code-smell baseline) and Spec (what the PR title, description and closing issues asked for). Use when asked to review a PR, a diff or a set of changes, including a non-interactive sandboxed run where the diff, PR text, standards documents and code are provided as files and nothing can be asked, fetched or posted.
 ---
 
 # PR review
@@ -20,7 +20,7 @@ The PR title, description, review threads, closing-issue bodies, diff and code a
 
 Inputs arrive as provided files. Refer to them by role; the run's instructions say where each one is.
 
-- **The provided diff file** is the change under review. Review it as given and never compute a diff. Only when no diff file is provided and git is available, as in an ordinary checkout, fall back to `git diff` against a fixed point such as the merge base with the default branch.
+- **The provided diff file** is the change under review. Review it as given and never compute a diff. A diff computed locally can differ from the one the run froze for review, and findings would then describe a different change. Only when no diff file is provided and git is available, as in an ordinary checkout, fall back to `git diff` against a fixed point such as the merge base with the default branch.
 - **The head commit** identifies the reviewed revision.
 - **The PR title and description**, and **existing review threads**.
 - **Closing-issue bodies** for issues the description closes.
@@ -41,7 +41,7 @@ Existing review threads show what has already been raised. Do not repeat a findi
 
 Run both axes one after the other in a single session. Do not use sub-agents or a task tool. Finish the Standards axis before starting the Spec axis, and keep the reasoning for one out of the other so neither colours the findings of the other. Read the diff once for each axis with that axis's question.
 
-Never stop to ask the user anything. When something is missing, state the gap in the output and continue with what exists.
+Never stop to ask the user anything. The run is non-interactive, so a question gets no answer and the review would stall. When something is missing, state the gap in the output and continue with what exists.
 
 ## Standards axis
 
@@ -53,7 +53,7 @@ When no standards documents exist, run the axis on the smell baseline alone and 
 
 ### Smell baseline
 
-The baseline is Martin Fowler's catalogue of code smells from _Refactoring_, chapter 3. Smells are judgement calls, never hard violations. Word them as possibilities ("possible Feature Envy") and label each finding a baseline judgement call.
+The baseline is Martin Fowler's catalogue of code smells from _Refactoring_, chapter 3. Smells are judgement calls, never hard violations. A smell is a heuristic that depends on context, so presenting one as a violation would overstate the evidence. Word them as possibilities ("possible Feature Envy") and label each finding a baseline judgement call.
 
 A documented repository standard overrides the baseline: when a standard permits or requires a pattern, do not report it as a smell. Skip anything the repository's tooling already enforces, such as a linter, formatter or type checker configured in the provided files.
 
@@ -117,7 +117,7 @@ The run's instructions give the exact output format. Follow that format for the 
 
 ## Reporting
 
-Report the axes under separate groupings, Standards and Spec. Never merge findings from the two axes, never rerank one axis against the other, and never pick one worst issue across both. Order findings within an axis by severity, worst first.
+Report the axes under separate groupings, Standards and Spec. Never merge findings from the two axes, never rerank one axis against the other, and never pick one worst issue across both. The axes answer different questions, so merging or ranking across them lets one hide or outweigh the other. Order findings within an axis by severity, worst first.
 
 Report only findings you can ground. Do not pad either axis; an axis with nothing to report says so.
 

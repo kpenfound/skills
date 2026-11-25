@@ -1,6 +1,6 @@
 ---
 name: unslop
-description: Cut AI tells and filler from prose. Load when writing or editing pull request titles, descriptions and replies, commit messages, or user-facing documentation such as READMEs, guides, release notes and changelogs.
+description: Cuts AI tells and filler from prose. Load when writing or editing pull request titles, descriptions and replies, commit messages, or user-facing documentation such as READMEs, guides, release notes and changelogs.
 ---
 
 # Unslop

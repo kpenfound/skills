@@ -1,6 +1,6 @@
 ---
 name: no-comments
-description: Decide whether a code comment, an inline lint or type-check suppression, or an internal markdown doc may exist. Load before adding, keeping or reviewing comments, suppression directives, TODO notes, commented-out code, or markdown files that explain code, and when a change touches any of them.
+description: Decides whether a code comment, an inline lint or type-check suppression, or an internal markdown doc may exist. Load before adding, keeping or reviewing comments, suppression directives, TODO notes, commented-out code, or markdown files that explain code, and when a change touches any of them.
 ---
 
 # No comments
@@ -47,7 +47,7 @@ These eight forms are banned in every file kind, code, config and scripts alike:
 
 No inline directive is ever honoured as an exception. The same goes for any other directive that switches a check off for the code after it, whatever its spelling. Delete it and fix what the check reported; the `lint-discipline` skill covers how to react to findings.
 
-Exceptions exist only by name in the repository's `weeds.toml`, never inline. Add or widen an entry only when the task or the owner asks for it. Otherwise delete the suppression, fix the finding if the fix is in scope, and put the proposed named entry in the report.
+Exceptions exist only by name in the repository's `weeds.toml`, never inline. A named entry sits in one reviewed file and fails the check once stale, while an inline one stays hidden beside the code. Add or widen an entry only when the task or the owner asks for it. Otherwise delete the suppression, fix the finding if the fix is in scope, and put the proposed named entry in the report.
 
 Tool directives that suppress nothing stay allowed, as listed above. `@ts-check` turns checking on, so it is a directive, not a suppression.
 

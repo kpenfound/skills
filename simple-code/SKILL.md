@@ -59,7 +59,7 @@ A symptom fix hides the evidence and leaves the fault free to surface elsewhere.
 - Ask whether the state that triggered the symptom is legitimate. If the system may be in that state, the code that broke on it is the root cause, and handling the state there is the fix. If the state should never exist, a check where it broke hides the bug. Find what produced the state. Guards, retries, swallowed errors, clamped values and discarded state are the usual ways to hide a bug.
 - When something fails only after a restart, suspect persisted state first: config files, caches, lock files, serialized state.
 - Check for the pattern, not just the instance. Find every place with the same fault and fix them all.
-- A workaround that needs a justification to be understood means the code is wrong. Reshape the code. A type error or failing check is a finding to fix at its source, never to silence inline.
+- A workaround that needs a justification to be understood means the code is wrong. Reshape the code. A type error or failing check is a finding to fix at its source, never to silence inline. A suppression leaves the defect in the code and hides it from the check.
 - When the deciding fact took a deep dig to find, propose the cheap, always-on signal that would have shown it at first look.
 
 ## 5. Type system discipline
