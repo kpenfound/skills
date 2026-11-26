@@ -7,7 +7,7 @@ description: Guides written final reports and handoffs so a reader with little c
 
 A final report or handoff is read later, by someone who did not see the work. Write it so that person can understand it and act on it without opening anything else first.
 
-**Scope.** This skill covers written reports and handoffs only. Spoken replies are out of scope: do not apply it to voice or other spoken output.
+**Scope.** This skill covers written reports and handoffs only. Spoken replies are out of scope: do not apply it to voice or other spoken output. When the run defines the report's format or fields, that format wins. This skill then shapes the prose inside it.
 
 ## The reader
 
@@ -33,7 +33,7 @@ Why: a retelling goes stale and can disagree with the source. A link stays true.
 
 ## 4. Plain, short writing
 
-Use short sentences with one idea each, in the active voice. Use prose where ideas connect, and keep bullets for separate items. Leave out detail the reader did not ask for, but keep the context they need to act. For sentence-level tells and filler, follow `unslop`.
+Use short sentences with one idea each, in the active voice. When a long paragraph would hold several separate items, such as findings, options or steps, use a short list instead. Use prose where ideas connect, and keep bullets for separate items. Leave out detail the reader did not ask for, but keep the context they need to act. For sentence-level tells and filler, follow `unslop`.
 
 ## Before sending
 

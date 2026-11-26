@@ -44,13 +44,14 @@ dagger check --progress=report --go-package=internal/service --go-test=TestA
 ```
 
 Its focused runs retain the full test container's pinned tools and browser. It
-also supports rerunning a quoted check link from a failure report, diagnostic
-race and repeated-run environments, and requires the full
-`dagger check --progress=report` before completion. These are examples of a
-repository contract, not flags or requirements to assume in every Dagger project.
-The skill does not require an Osmia checkout.
+also supports rerunning a quoted check link from a failure report and diagnostic
+race and repeated-run environments. Its check service runs the full
+`dagger check --progress=report`, so an agent there runs the focused commands
+above. These are examples of a repository contract, not flags or requirements to
+assume in every Dagger project. The skill does not require an Osmia checkout.
 
-Follow the current project's completion requirements. For diagnosis, use concise
+Follow the current project's completion requirements, applying the completion
+rule in `SKILL.md`. For diagnosis, use concise
 check results first and detailed execution output when needed to identify the
 actual test command or environment problem.
 

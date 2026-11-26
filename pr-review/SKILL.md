@@ -5,7 +5,7 @@ description: Reviews a pull request or change set along two independent axes, St
 
 # PR review
 
-Review a change on two axes and report each on its own. The result is a review report. The reviewer reads, judges and writes findings; it does not post, approve, comment, request changes, push or contact any service.
+Review a change on two axes and report each on its own. The result is a review report. The reviewer reads, judges and writes findings; it does not post, approve, comment, request changes, push or contact any service. Recording a verdict through a tool or format the run itself provides is part of the run, not one of those actions.
 
 - **Standards** asks whether the change follows the repository's documented coding standards, with a baseline of code smells where no standard speaks.
 - **Spec** asks whether the change does what its originating spec asked for.
@@ -33,15 +33,15 @@ Existing review threads show what has already been raised. Do not repeat a findi
 
 ## Sources
 
-**Spec sources** are the PR title, the PR description and the provided closing-issue bodies. In an ordinary checkout with none of these, a spec file the change refers to counts as well.
+**Spec sources** are the PR title, the PR description and the provided closing-issue bodies. In an ordinary checkout with none of these, a spec file the change refers to counts as well. When the run's own instructions state the task and its acceptance items in place of PR text, those are the spec sources, and each acceptance item is a requirement to compare the change with.
 
-**Standards sources** are the provided standards documents listed above.
+**Standards sources** are the provided standards documents listed above, and any written rules the run's instructions state. A breach of such a rule is grounded the way a breach of a standards document is.
 
 ## Run the axes in sequence
 
 Run both axes one after the other in a single session. Do not use sub-agents or a task tool. Finish the Standards axis before starting the Spec axis, and keep the reasoning for one out of the other so neither colours the findings of the other. Read the diff once for each axis with that axis's question.
 
-Never stop to ask the user anything. The run is non-interactive, so a question gets no answer and the review would stall. When something is missing, state the gap in the output and continue with what exists.
+Never stop to ask the user anything, unless the run provides its own way to ask and routes the answer back to the review. A non-interactive run gives a question no answer, so the review would stall. When something is missing, state the gap in the output and continue with what exists.
 
 ## Standards axis
 
@@ -114,6 +114,16 @@ Each finding gives:
 A baseline judgement call is rarely `high`. Reserve `high` on the Standards axis for breaches of a documented standard.
 
 The run's instructions give the exact output format. Follow that format for the fields above and for the summary; this skill defines no format of its own.
+
+### When the run defines its own verdict and severities
+
+A run can define its own verdict, such as a tool that records the outcome of the review, with its own decision values, severity levels and finding fields. That definition wins over everything in this section. The `high`, `medium` and `low` levels above are a way to judge a finding, and they map onto the run's definition without replacing it:
+
+- When the run leaves the severity as free text, use `high`, `medium` and `low`.
+- When the run defines its own levels, give each finding the level whose meaning matches. `high` is a finding that must be fixed before the change is accepted, `medium` one that should be fixed or consciously accepted, and `low` an optional point. A scale with two levels, such as blocking and advisory, takes `high` as the blocking level and `medium` and `low` as the advisory one. Do not add a severity word the run does not define. When the run's format has no severity field, state the severity in the explanation.
+- When the run's finding has fewer fields than the list above, such as no axis, file or line range, put the axis, file and line range in the explanation or evidence field, in the form the run gives.
+- The run's rules decide the verdict. Use the severities as evidence for it: a `high` finding argues against accepting the change as written, and a review with only `low` findings gives little ground for blocking it.
+- When the run's verdict reserves findings for what blocks acceptance, or allows none in an accepting verdict, record the findings that meet that bar as findings. Mention the remaining optional points in the summary, not as findings. Otherwise report every finding you can ground, even when no run level fits it exactly.
 
 ## Reporting
 

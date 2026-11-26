@@ -48,7 +48,7 @@ Keep a record with three parts:
 - the shape you rejected,
 - the reason, tied to the tests in step 3.
 
-Put the record where the reader of the change will find it, such as the design note or the PR description. How it reads is covered by `handoff-reports`.
+Put the record where the reader of the change will find it, such as the design note, the brief or the report the run asks for, and in the PR text when the task has you write it. How it reads is covered by `handoff-reports`.
 
 ## Attribution
 

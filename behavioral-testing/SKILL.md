@@ -38,6 +38,10 @@ hand; audit or restructure the broader suite only when requested.
   `no-deltas` skill, when installed, states the same rule for tests in general.
 - Preserve useful existing coverage. These principles do not authorize wholesale
   deletion of unit tests or migration of the project's test infrastructure.
+- Follow the project's own conventions for tests: its framework, file layout and
+  naming, shared helpers and fixtures, and assertion style. Read neighbouring
+  tests before writing one and match them. Depart from a convention only when
+  it prevents the test from protecting its contract, and say so in the report.
 
 ## Design independent scenarios
 
@@ -111,8 +115,8 @@ establish their validity.
   contract. Explain or fix unexpected differences. Review initial goldens too:
   generated output records what the application does, not proof of correctness.
 - Run verification with updates disabled after accepting changes. Explain
-  meaningful expectation changes in the PR or completion report, and flag
-  uncertainty. Human review is an additional check, not a substitute for the
+  meaningful expectation changes in the completion report, and in any PR text
+  the task has you write, and flag uncertainty. Human review is an additional check, not a substitute for the
   agent reviewing the diff.
 
 ## Keep execution reliable and efficient
@@ -127,9 +131,13 @@ patterns and focused execution guidance. Dagger is an option, not a prerequisite
   runtime environment, dependency versions and execution boundaries. Tests should
   be discoverable and individually runnable. Do not bypass required orchestration
   merely to run one test faster.
-- Before finishing, expand validation to the affected contracts and run the
-  repository's required completion checks. A focused pass does not replace a
-  mandated full suite. After checks pass, repeat them only when new changes,
+- Run focused checks for the contracts you changed, and widen them to every
+  contract the change affects before finishing. When the repository has a check
+  service or CI that runs the full suite, leave the full suite to it and do not
+  run it as your own completion step; that service gives the complete
+  validation. Run the completion checks the repository assigns to you
+  yourself. When the repository has no such service, keep the completion
+  requirement it sets. After checks pass, repeat them only when new changes,
   failures or unresolved concerns warrant it.
 - Use readiness checks and bounded condition waits rather than arbitrary sleeps.
   Coordinate controlled events explicitly. Assert elapsed time when timing is
@@ -154,4 +162,5 @@ fakes and expected values do not bypass that claim.
 
 Report the checks actually run and their results, including relevant skips,
 cached results and blockers. Do not claim broader coverage than the executed
-scenarios provide.
+scenarios provide. When the run defines a report format, put this in that
+format.

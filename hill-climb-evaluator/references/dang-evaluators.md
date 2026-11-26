@@ -101,4 +101,4 @@ The same document with `valid` false for a candidate whose output is wrong:
 }
 ```
 
-On a climbing attempt, the service discards this candidate. During calibration or the baseline measurement, the same output means the metric is broken, and the climb holds.
+On a climbing attempt, the service discards this candidate. During calibration, which sets the baseline, the same output means the metric is broken, and the climb holds.
