@@ -20,6 +20,7 @@ Agent skills for coding agents. Each top-level folder holding a `SKILL.md` is on
 | [`spoken-replies`](spoken-replies/SKILL.md)                       | Shapes replies that are heard aloud rather than read.                                        |
 | [`typescript-best-practices`](typescript-best-practices/SKILL.md) | Gives TypeScript syntax for type design, narrowing, validation and function signatures.      |
 | [`unslop`](unslop/SKILL.md)                                       | Cuts AI tells and filler from prose.                                                         |
+| [`verification`](verification/SKILL.md)                           | Drives the running build through a lever and ties every claim to evidence.                   |
 
 ## Authoring conventions
 
@@ -56,6 +57,7 @@ Each rule has one owner. A skill that needs a rule points to its owner and does 
 | Layout of written reports and handoffs                            | `handoff-reports`           |
 | Spoken reply style                                                | `spoken-replies`            |
 | Hill-climb evaluator and metric                                   | `hill-climb-evaluator`      |
+| Driving the running build and attaching evidence to claims        | `verification`              |
 
 ## Scenarios
 
@@ -65,5 +67,6 @@ The new skills have three hand-run scenarios each:
 - [`scenarios/debugging`](scenarios/debugging)
 - [`scenarios/handoff-reports`](scenarios/handoff-reports)
 - [`scenarios/design-sketch`](scenarios/design-sketch)
+- [`scenarios/verification`](scenarios/verification/README.md)
 
 Give the agent the skill and the input a scenario describes, then compare the output with its "A good result".
