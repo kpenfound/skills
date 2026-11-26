@@ -38,6 +38,10 @@ hand; audit or restructure the broader suite only when requested.
   `no-deltas` skill, when installed, states the same rule for tests in general.
 - Preserve useful existing coverage. These principles do not authorize wholesale
   deletion of unit tests or migration of the project's test infrastructure.
+- Follow the project's own conventions for tests: its framework, file layout and
+  naming, shared helpers and fixtures, and assertion style. Read neighbouring
+  tests before writing one and match them. Depart from a convention only when
+  it prevents the test from protecting its contract, and say so in the report.
 
 ## Design independent scenarios
 

@@ -33,7 +33,7 @@ Why: a retelling goes stale and can disagree with the source. A link stays true.
 
 ## 4. Plain, short writing
 
-Use short sentences with one idea each, in the active voice. Use prose where ideas connect, and keep bullets for separate items. Leave out detail the reader did not ask for, but keep the context they need to act. For sentence-level tells and filler, follow `unslop`.
+Use short sentences with one idea each, in the active voice. When a long paragraph would hold several separate items, such as findings, options or steps, use a short list instead. Use prose where ideas connect, and keep bullets for separate items. Leave out detail the reader did not ask for, but keep the context they need to act. For sentence-level tells and filler, follow `unslop`.
 
 ## Before sending
 

@@ -33,9 +33,9 @@ Existing review threads show what has already been raised. Do not repeat a findi
 
 ## Sources
 
-**Spec sources** are the PR title, the PR description and the provided closing-issue bodies. In an ordinary checkout with none of these, a spec file the change refers to counts as well.
+**Spec sources** are the PR title, the PR description and the provided closing-issue bodies. In an ordinary checkout with none of these, a spec file the change refers to counts as well. When the run's own instructions state the task and its acceptance items in place of PR text, those are the spec sources, and each acceptance item is a requirement to compare the change with.
 
-**Standards sources** are the provided standards documents listed above.
+**Standards sources** are the provided standards documents listed above, and any written rules the run's instructions state. A breach of such a rule is grounded the way a breach of a standards document is.
 
 ## Run the axes in sequence
 
