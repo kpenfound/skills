@@ -7,7 +7,7 @@ description: Walks a bug from report to verified fix in six checked steps (repro
 
 A loop for bugs whose cause is not obvious. Run the steps in order. Each step ends with a check, and the next step does not start until that check holds. A skipped step needs a stated reason.
 
-Redact every secret in the commands, output and captured files you show: write `<REDACTED>` in its place. Keep credentials in environment variables so the loop never carries them. Quote only the lines of a captured artifact that carry the signal. If redacted output is too thin to diagnose from, say so and ask.
+Redact every secret in the commands, output and captured files you show: write `<REDACTED>` in its place. Keep credentials in environment variables so the loop never carries them. Quote only the lines of a captured artifact that carry the signal. If redacted output is too thin to diagnose from, say so and name what would be enough. Put that request in the final report when no one is there to answer.
 
 Root-cause principles live in `simple-code` §4, which covers fixing the fault rather than the place it surfaced, and how to treat guards and workarounds. Test design for step 6 lives in `behavioral-testing`. Load both. This skill sequences the work and does not restate them.
 
@@ -30,7 +30,7 @@ Tighten the loop once it exists. Make it faster by narrowing scope and skipping 
 
 For a non-deterministic bug, aim for a higher reproduction rate rather than a clean repro: repeat the trigger a hundred times, run in parallel, add load, narrow timing windows. A bug that fails half the time is debuggable and one that fails 1% of the time is not.
 
-If no loop can be built, stop and say so. List what was tried and ask for one of: access to an environment that reproduces it, a redacted captured artifact (log dump, trace, core dump, recording with timestamps), or permission to add temporary instrumentation there. Do not move on to causes without a loop, because every later step consumes its signal.
+If no loop can be built, stop and say so. List what was tried and request one of: access to an environment that reproduces it, a redacted captured artifact (log dump, trace, core dump, recording with timestamps), or permission to add temporary instrumentation there. Put the request in the final report, and ask in the conversation only when a person is there to answer; never wait on a reply that cannot come. Do not move on to causes without a loop, because every later step consumes its signal.
 
 **Check:** name the one command, show its invocation and output from a run you made, and confirm it is
 
@@ -95,7 +95,7 @@ Before reporting done:
 - The original reproduction no longer fails.
 - The regression test passes, or the missing seam is documented.
 - Throwaway scripts and harnesses are deleted, or moved somewhere marked as debug-only.
-- The commit or PR text states the cause that turned out correct, so the next debugger learns it.
+- The final report states the cause that turned out correct, so the next debugger learns it. Any commit or PR text the task has you write states it too.
 
 ## Attribution
 

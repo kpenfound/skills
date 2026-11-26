@@ -7,7 +7,7 @@ description: Guides written final reports and handoffs so a reader with little c
 
 A final report or handoff is read later, by someone who did not see the work. Write it so that person can understand it and act on it without opening anything else first.
 
-**Scope.** This skill covers written reports and handoffs only. Spoken replies are out of scope: do not apply it to voice or other spoken output.
+**Scope.** This skill covers written reports and handoffs only. Spoken replies are out of scope: do not apply it to voice or other spoken output. When the run defines the report's format or fields, that format wins. This skill then shapes the prose inside it.
 
 ## The reader
 

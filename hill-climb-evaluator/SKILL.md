@@ -1,6 +1,6 @@
 ---
 name: hill-climb-evaluator
-description: Write, review and judge the evaluator of a hill climb, the Dagger function that measures a candidate change and returns one JSON string, and the metric it reports. Use when writing, reviewing or judging a hill-climb evaluator or its metric, including its JSON contract, its noise, its correctness checks, its fixtures and its resistance to gaming.
+description: Writes, reviews and judges the evaluator of a hill climb, the Dagger function that measures a candidate change and returns one JSON string, and the metric it reports. Use when writing, reviewing or judging a hill-climb evaluator or its metric, including its JSON contract, its noise, its correctness checks, its fixtures and its resistance to gaming.
 ---
 
 # Hill-climb evaluator
@@ -17,7 +17,7 @@ Treat every rule here as normative.
 2. **Name.** The climb spec records the evaluator function's name. A climb may create its own function. A function left by an earlier climb may be reused only when it matches the new climb spec.
 3. **Arguments.** The function takes exactly one caller argument, `run: String!`. It may also declare `ws: Workspace!`; the engine fills in Workspace arguments for every function, so `ws` is not a caller argument. It declares no other required arguments.
 4. **Return value.** The function returns one JSON string (`String!`), never a typed Dagger object. This keeps the contract identical in every SDK.
-5. **Parsing.** The service accepts the output only when it is a JSON object of the shape below. Anything else, including a function error or a timeout, is a failed run.
+5. **Parsing.** The service accepts the output only when it is a JSON object of the shape below. Anything else is a failed run: a function error or a timeout, output too large to read, output that does not conform, and output that omits a metric the climb spec requires or reports it with another direction than the spec's or another unit than calibration recorded.
 
 ### The JSON shape
 
@@ -38,7 +38,7 @@ Treat every rule here as normative.
 }
 ```
 
-The climb spec names one primary metric from `metrics`, its direction and a minimum improvement in that metric's units. Other metrics can carry guardrail limits. Report every metric a guardrail may need, under a stable name, in every run.
+The climb spec names one primary metric from `metrics`, its direction and a minimum improvement. The spec must set `metric.min_improvement`, an absolute amount in that metric's units and above zero. Osmia refuses a climb spec without it and supplies no default or `[kinds.hill-climb]` setting for it, so an evaluator never assumes a value. An improvement equal to the minimum counts as kept. Other metrics can carry guardrail limits. Report every metric the primary and the guardrails need, under a stable name, with the same unit and direction in every run.
 
 ### The `run` argument
 
@@ -50,14 +50,15 @@ The value has to reach the operations being measured. The simplest way is to set
 
 Build correctness checks into the evaluator. A result that is faster but wrong is `valid: false` with a reason, never a score. What an invalid or failed run means depends on the phase:
 
-- **Calibration and the baseline measurement** run the approved evaluator on the evaluator commit before any attempt. A failed run, or output that does not parse or is not valid, means the metric is broken, not the code. The climb holds and the chief of staff is told. Fix the evaluator.
-- **A climbing attempt** that returns `valid: false` means that candidate is wrong. The evaluator did its job. The attempt is discarded; it is not eligible to be kept. This does not mean the metric is broken and does not hold a healthy climb.
+- **Calibration**, which sets the baseline, runs the evaluator on the evaluator commit before any attempt. A failed run, or a run that is not valid, means the metric is broken, not the code. The climb holds and the chief of staff is told. Fix the evaluator.
+- **A climbing attempt** that returns `valid: false` means that candidate is wrong. The evaluator did its job. The attempt is discarded as an invalid measurement; it is not eligible to be kept. This does not mean the metric is broken and does not hold a healthy climb.
+- **A failed run during a climbing attempt** also discards that attempt as an invalid measurement. It does not hold the climb, so a broken harness shows up as attempts discarded for no better reason. When an attempt takes several repeats, one failed or invalid run makes the whole measurement invalid.
 
 A function error is a failed run, not a verdict on a candidate. Report a candidate's wrong output as `valid: false`, and let the function fail only when the measurement itself could not run. When the evaluator cannot tell a wrong candidate from a broken harness, a reviewer cannot trust either outcome. Make that distinction explicit in the code.
 
 ## Design for low noise
 
-Calibration runs the evaluator several times, 3 by default, on the evaluator commit. The climb holds as too noisy when the run-to-run spread is as large as the minimum improvement or larger. Design so the spread is far below the improvement worth keeping.
+Calibration runs the evaluator several times on the evaluator commit. The count is osmia's configurable default, `[kinds.hill-climb] calibration_runs` (3 unless the owner sets it, from 2 to 25), so do not rely on a particular count. The spread is the largest primary value minus the smallest. The climb holds as too noisy when the spread is as large as the minimum improvement or larger. Each run of the evaluator is also limited by osmia's configurable measurement timeout, `[kinds.hill-climb] measurement_timeout` (15m unless the owner sets it, from 1m to 24h), and a run that exceeds it is a failed run, so keep the measured work well inside the limit. Design so the spread is far below the improvement worth keeping.
 
 - Fix every input and seed. The same fixtures, the same generated data and the same ordering on every run.
 - Control warm-up and cache state explicitly. Either warm the workload once before the timed part, or measure cold every time, and do the same on every run.
@@ -67,7 +68,7 @@ Calibration runs the evaluator several times, 3 by default, on the evaluator com
 - Prefer a quantity that does not vary, such as operations counted, bytes allocated or output size, when it reflects the goal. Use wall-clock time only when time is the goal.
 - Report the minimum or median of several timings taken inside one exec when that tames jitter, and say so in the metric name or `reason`.
 
-Repeats are the other lever. The service can measure each attempt `k` times and compare the median. Use repeats when noise comes from occasional outliers and the evaluator is cheap to run. They multiply the cost of every attempt and cannot fix a design whose calibration spread is already near the minimum improvement. Fix the design first, then choose the minimum improvement above the calibrated spread.
+Repeats are the other lever. The service can measure each attempt `k` times and compare the median. A climb spec sets `k`; when it sets none, osmia's configurable default `[kinds.hill-climb] repeats` applies (1 unless the owner sets it, from 1 to 25). Use repeats when noise comes from occasional outliers and the evaluator is cheap to run. They multiply the cost of every attempt and cannot fix a design whose calibration spread is already near the minimum improvement. Fix the design first, then choose the minimum improvement above the calibrated spread.
 
 ## Resist gaming
 
@@ -158,4 +159,4 @@ type OsmiaDev {
 
 ## Contract version and osmia
 
-This skill states contract schema version **1**. The evaluator contract is one definition shared with osmia, whose runner calls the evaluator, parses the JSON and applies the protected paths. A change to the contract, such as a new field, a different `direction` vocabulary or different argument rules, bumps `schema` and has to be made in this skill and in osmia together. Neither side changes it alone. Never emit a `schema` other than `1` from an evaluator written against this skill.
+This skill states contract schema version **1**. The evaluator contract is one definition shared with osmia, whose runner calls the evaluator, parses the JSON and applies the protected paths. A change to the contract, such as a new field, a different `direction` vocabulary or different argument rules, bumps `schema` and has to be made in this skill and in osmia together. Neither side changes it alone. The values osmia owns are the calibration runs, the default repeats and the measurement timeout. They are osmia's configurable defaults, set under `[kinds.hill-climb]`, and they can change without a schema change, so no evaluator may depend on them. The minimum improvement is not one of them: the climb spec must set `metric.min_improvement`, and osmia has no default or setting for it. Never emit a `schema` other than `1` from an evaluator written against this skill.

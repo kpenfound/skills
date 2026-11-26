@@ -16,7 +16,7 @@ Apply this to the findings in the files being changed. Work through unrelated fi
 1. Read the finding and the rule behind it. Learn what failure the rule prevents.
 2. Find the cause in the code, not the line the tool points at.
 3. Change the code so the finding cannot occur: fix the type, remove the dead path, split the function, use the real API.
-4. Run the check again and confirm the finding is gone because the code changed.
+4. Run the check that reported the finding again, as narrowly as the repository allows, and confirm the finding is gone because the code changed.
 
 A guard added to make a tool quiet is a symptom fix. If the cause is outside the files in scope, make the smallest in-scope fix and report the rest to the caller.
 

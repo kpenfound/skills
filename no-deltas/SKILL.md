@@ -98,5 +98,8 @@ For each sentence, ask: **Does this help explain the current behavior or a
 constraint?** For each test, ask: **What meaningful failure would this catch?**
 
 Check renamed references and preserve the intended test coverage. Follow the
-repository's validation instructions, and report the checks actually performed.
+repository's validation instructions for the changed artifacts, apply the
+check-running rule of the `behavioral-testing` skill when it is installed,
+and report the checks
+actually performed.
 Do not turn this guidance into brittle tests that ban words or match wording.
